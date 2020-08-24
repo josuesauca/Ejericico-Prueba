@@ -1,0 +1,329 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+FILE *presentarFactura;
+
+struct Cliente{
+
+    int id;
+    char nombres[50];
+    char apellidos[50];
+    char dni[50];
+    char correo[50];
+    char direccion[50];
+    
+};
+
+struct Item{
+    char codigo[50];
+    char descripcion[50];
+    float cantidad;
+    float precioUnitario;
+    float totalProducto;
+};
+
+struct Factura {
+
+    char numero[50];
+    float tasaIva;
+    float totalIva;
+    float subtotal;
+    float total;
+
+};
+
+struct Cliente cliente;
+struct Item *item;
+
+
+void datosCliente();
+int limiteProductos();
+void limiteProduc(int limiteProdu,struct Factura datosFactura);
+void impresionInicial(struct tm tm,int numeroFactura);
+void impresionDatosCliente(struct Cliente cliente);
+void calculoTotal(int limite,struct Factura datosFactura);
+void impresionProductosIngresados(int limite);
+void impresionCalculoTotal(struct Factura datosFactura);
+void mensajeSalida();
+void facturaTxt(FILE *presentarFactura, struct tm tm,int numeroFactura,struct Factura datosFactura,int limite);
+
+
+int main(int argc, char const *argv[]){
+
+    srand(time(NULL));
+    time_t now = time(NULL);
+    struct tm tm = *localtime(&now);
+    struct Factura datosFactura;
+
+    system("@cls||clear");
+  
+    int numeroFactura = rand() %450+1;
+    char *direccion = {"C:\\Users\\DELL\\Desktop\\ALGORITMOS\\Factura Programacion\\Factura.txt"};
+    presentarFactura = fopen(direccion,"w+");
+
+    datosCliente();
+
+    int limiteProdu = limiteProductos();
+    limiteProduc(limiteProdu,datosFactura);
+
+    system("@cls||clear");
+  
+    impresionInicial(tm,numeroFactura);
+    impresionDatosCliente(cliente);
+    calculoTotal(limiteProdu,datosFactura);
+    impresionProductosIngresados(limiteProdu);
+    impresionCalculoTotal(datosFactura);
+    mensajeSalida(); 
+    
+    facturaTxt(presentarFactura,tm,numeroFactura,datosFactura,limiteProdu); 
+    fclose(presentarFactura);
+
+    return 0;
+}
+
+int limiteProductos(){
+    int cantidadProductos;
+    printf("\nPor Favor Ingrese la Cantidad de Productos a Llevar : ");
+    scanf("%i",&cantidadProductos);
+    return cantidadProductos;
+}
+
+void impresionInicial(struct tm tm,int numeroFactura){
+
+    printf("----------------------------------------------------------------\n");
+    printf("\t\t\tFACTURA DE VENTA\n");
+    printf("\t\t\tEMPRESA TELCEL\n");
+    printf("-----------------------------------------------------------------");
+    printf("\nFecha de emision : %d-%d-%d",tm.tm_year+1900,tm.tm_mon+1,tm.tm_mday);
+    printf("\nNro. factura : 000%i ",numeroFactura);
+
+}
+
+void datosCliente(){
+    
+    puts("\nIngrese los Datos del Cliente");
+    printf("\n---------------------------------------------------------------\n");
+    printf("Nombres : ");
+    gets(cliente.nombres);
+    printf("Apellidos : ");
+    gets(cliente.apellidos);
+    printf("Cedula : ");
+    fgets(cliente.dni,sizeof(cliente.dni),stdin);
+    printf("Correo : ");
+    fgets(cliente.correo,sizeof(cliente.correo),stdin);
+    printf("Direccion : ");
+    fgets(cliente.direccion,sizeof(cliente.direccion),stdin);
+    printf("Id : ");
+    scanf("%i",&cliente.id);
+
+    /* puts("\nIngrese los Datos del Cliente");
+    printf("\n---------------------------------------------------------------\n");
+    printf("Nombres : ");
+    fgets(client.cliente.nombres,50,stdin);
+    printf("Apellidos : ");
+    fgets(client.cliente.apellidos,50,stdin);
+    printf("Cedula : ");
+    fgets(client.cliente.dni,50,stdin);
+    printf("Correo : ");
+    fgets(client.cliente.correo,50,stdin);
+    printf("Direccion : ");
+    fgets(client.cliente.direccion,50,stdin);
+    printf("Id : ");
+    scanf("%i",&client.cliente.id);
+
+    fprintf(presentarFactura,"\n\nCliente");
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nNombres : %s",strcat((client.cliente.nombres),(client.cliente.apellidos)));
+    fprintf(presentarFactura,"Cedula : ");
+    fprintf(presentarFactura,"%s",client.cliente.dni);
+    fprintf(presentarFactura,"Correo : ");
+    fprintf(presentarFactura,"%s",(client.cliente.correo)); 
+    fprintf(presentarFactura,"Direccion : ");
+    fprintf(presentarFactura,"%s",(client.cliente.direccion));
+    fprintf(presentarFactura,"Id : ");
+    fprintf(presentarFactura,"%i",(client.cliente.id));  */
+
+}
+
+void impresionDatosCliente(struct Cliente cliente){
+
+    printf("\n\nCliente");
+    printf("\n---------------------------------------------------------------");
+    printf("\nNombres : ");
+    printf("%s %s",(cliente.nombres),(cliente.apellidos));
+    printf("\nCedula : %s",cliente.dni);
+    printf("Correo : %s",cliente.correo);
+    printf("Direccion : %s",cliente.direccion);
+    printf("Id : %i",cliente.id);
+
+}
+
+void limiteProduc(int limiteProdu,struct Factura datosFactura){
+
+    int i;
+    item = (struct Item*)malloc(limiteProdu *sizeof(struct Item));
+    fflush(stdin);
+    for (i = 0; i <limiteProdu; i++){
+        //fflush(stdin);
+        printf("\n");
+        printf("%i) Codigo del Producto : ",i+1);
+        //getchar();
+        scanf("%s",&item[i].codigo);
+        //scanf("%[^\n]",item[i].codigo);
+        //fgets(item[i].codigo,sizeof(item[i].codigo),stdin);
+        //fflush(stdin); 
+        printf("%i) Cantidad : ",i+1);
+        scanf("%f",&item[i].cantidad);
+        printf("%i) Descripcion : ",i+1);
+        //getchar();
+        //fflush(stdin); 
+        scanf("%s",&item[i].descripcion);
+        //fgets(item[i].descripcion,sizeof(item[i].descripcion),stdin);
+
+        /* gets(item[i].descripcion);
+        fflush(stdin); */
+        printf("%i) Precio : ",i+1);
+        scanf("%f",&item[i].precioUnitario);
+
+    }
+
+}
+
+void impresionProductosIngresados(int limite){
+    int j;
+    printf("\nCodigo\tCantidad\tDescripcion\tPrecio U.\tTotal");
+    printf("\n---------------------------------------------------------------");
+    for (j = 0; j<limite;++j){
+        printf("\n%s  \t%.2f       \t%s       \t%.2f    \t%.2f",item[j].codigo,item[j].cantidad,item[j].descripcion,item[j].precioUnitario,item[j].totalProducto); 
+    }
+
+}
+
+void calculoTotal(int limite,struct Factura datosFactura){
+    int j;
+
+    for (j = 0; j<limite;++j){       
+        item[j].totalProducto = item[j].cantidad * item[j].precioUnitario;          
+        datosFactura.total = datosFactura.total + item[j].totalProducto;
+    }
+
+    datosFactura.tasaIva = datosFactura.total*0.14;
+    datosFactura.totalIva = datosFactura.tasaIva + datosFactura.total;
+
+}
+
+void impresionCalculoTotal(struct Factura datosFactura){
+
+    printf("\n---------------------------------------------------------------");
+    printf("\nSubtotal Neto : %.2f USD",datosFactura.total);
+    printf("\n---------------------------------------------------------------");
+    printf("\nIVA(14%%) : %.2f",datosFactura.tasaIva);
+    printf("\n---------------------------------------------------------------");
+    printf("\nTotal a Pagar : %.2f USD", datosFactura.totalIva);
+    printf("\n---------------------------------------------------------------");
+
+}
+
+void mensajeSalida(){
+
+   printf("\t\t\n!!!!!!!!GRACIAS POR TU COMPRA!!!!!!!");
+   printf("\n---------------------------------------------------------------");
+   printf("\n===============================================================");
+   printf("\n\tProgramado por JOSUE SAUCA");
+   printf("\n===============================================================");
+    
+}
+
+void facturaTxt(FILE *presentarFactura, struct tm tm,int numeroFactura,struct Factura datosFactura,int limite){
+    int j;
+    fprintf(presentarFactura,"---------------------------------------------------------------\n");
+    fprintf(presentarFactura,"\t\t\tFACTURA DE VENTA\n");
+    fprintf(presentarFactura,"\t\t\tEMPRESA TELCEL\n");
+    fprintf(presentarFactura,"---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nFecha de emision : %d-%d-%d",tm.tm_year+1900,tm.tm_mon+1,tm.tm_mday);
+    fprintf(presentarFactura,"\nNro. factura : 000%i",numeroFactura);
+    fprintf(presentarFactura,"\n\nCliente");
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nNombres : ");
+    fprintf(presentarFactura,"%s %s",(cliente.nombres),(cliente.apellidos));
+    fprintf(presentarFactura,"\nCedula : %s",cliente.dni);
+    fprintf(presentarFactura,"Correo : %s",cliente.correo);
+    fprintf(presentarFactura,"Direccion : %s",cliente.direccion);
+    fprintf(presentarFactura,"Id : %i",cliente.id);
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nLISTADO DE PRODUCTOS");
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nCodigo\tCantidad\tDescripcion\tPrecio U.\tTotal");
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    for (j = 0; j<limite;++j){
+        fprintf(presentarFactura,"\n%s  \t%.2f       \t%s       \t%.2f    \t%.2f",item[j].codigo,item[j].cantidad,item[j].descripcion,item[j].precioUnitario,item[j].totalProducto); 
+    }
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nSubtotal Neto : %.2f USD", datosFactura.total);
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nIVA(14%%) : %.2f",datosFactura.tasaIva);
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\nTotal a Pagar : %.2f USD",datosFactura.totalIva);
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");    
+    fprintf(presentarFactura,"\n\t\t!!!!!!!!GRACIAS POR TU COMPRA!!!!!!!");
+    fprintf(presentarFactura,"\n---------------------------------------------------------------");
+    fprintf(presentarFactura,"\n===============================================================");
+    fprintf(presentarFactura,"\n\t\tProgramado por JOSUE SAUCA");
+    fprintf(presentarFactura,"\n==============================================================="); 
+}
+ 
+/* 
+ #include <stdlib.h>
+#include <stdio.h>
+
+struct spieler {
+    char name[20];
+    int age;
+};
+
+struct spieler *sp;    // Add this
+
+void erzeuge();
+
+int main() {
+    int anzahl;
+    printf("Anzahl Spielern: ");
+    scanf("%d", &anzahl);
+
+    erzeuge(anzahl);
+
+    printf("Es sind %d Spielern\n", anzahl);
+
+    int i;
+    for(i = 0; i < anzahl; i++){
+        printf("%d.%s\n", i, sp[i].name);
+    }
+
+    if (sp) {
+        free(sp);
+    }
+    getchar();
+    return 0;
+}
+
+void erzeuge(int anzahl) {
+    // Add the following line to allocate memory
+    sp = (struct spieler*) malloc(anzahl * sizeof(struct spieler));
+
+    int i;
+    for (i = 0; i < anzahl; i++) {
+        // Remove the following line because it create an array of "i" elements
+        // struct spieler sp[i];
+        printf("Struct fuer Spieler_%d wurde erzeugt\n", i);
+        getchar();
+        printf("Name: ");
+        scanf("%s",sp[i].name);
+
+        printf("%s\n",sp[i].name);
+    }
+} */
+
+ /* Printf("%s",__TIME__);
+    printf("%s",__DATE__); */
